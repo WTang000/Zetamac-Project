@@ -3,6 +3,7 @@ from fastapi import FastAPI, Depends
 from database import create_db_and_tables, engine
 from sqlmodel import Session, SQLModel, select
 from models.session import Session as SessionModel
+from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -10,6 +11,12 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['http://localhost:5173'],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_session():
     with Session(engine) as session:

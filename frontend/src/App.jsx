@@ -1,4 +1,4 @@
-import { useState, useEffect} from "react"
+import { useState, useEffect, useRef} from "react"
 
 function App(){
 	const [correct, setCorrect] = useState(0);
@@ -9,6 +9,7 @@ function App(){
 	const [timeLimit, setTimeLimit] = useState(60)
 	const [num1Range, setNum1Range] = useState({ min: 1, max: 25 })
 	const [num2Range, setNum2Range] = useState({ min: 1, max: 25 })
+	const correctRef = useRef(0)
 
 	// operations
 	const [enabledOps, setEnabledOps] = useState(['+', '-', '*', '/'])
@@ -43,6 +44,15 @@ function App(){
 			setTime(t => {
 				if (t <= 1) {
 					clearInterval(id)
+					fetch('http://localhost:8000/sessions/', {
+						method: 'POST',
+						headers: { 'Content-Type' : 'application/json' },
+						body: JSON.stringify({
+							correct: correctRef.current,
+							incorrect: 0,
+							avg_time_per_problem: correctRef.current > 0 ? timeLimit / correctRef.current : 0
+						})
+					})
 					return 0
 				}
 
@@ -74,7 +84,10 @@ function App(){
 		}
 
 		if (Number(answer) === correctAnswer ){
-			setCorrect(correct + 1)
+			setCorrect(c => {
+				correctRef.current = c + 1
+				return c + 1
+			})
 			problemGenerator()
 			setAnswer('')
 		}
@@ -149,6 +162,7 @@ function App(){
 				<button onClick={() => {
 					setGameStarted(false)
 					setCorrect(0)
+					correctRef.current = 0
 					setAnswer('')
 				}}> Play Again </button>
 			</div>

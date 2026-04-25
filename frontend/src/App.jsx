@@ -7,10 +7,12 @@ function App(){
 	const [problem, setProblem] = useState({ num1: 0, num2: 0, operator: '+'})
 	const [answer, setAnswer] = useState('')
 	const [gameStarted, setGameStarted] = useState(false)
+	const [timeLimit, setTimeLimit] = useState(60)
 
 	// operations
 	const [enabledOps, setEnabledOps] = useState(['+', '-', '*', '/'])
 
+	// generate random problems
 	function problemGenerator(){
 		const num1 = Math.floor(Math.random() * 25) + 1
 		const num2 = Math.floor(Math.random() * 25) + 1
@@ -19,6 +21,7 @@ function App(){
 		setProblem({num1, num2, operator})
 	}
 
+	// options for operations 
 	function toggleOp(op){
 		if ( enabledOps.includes(op) ){
 			setEnabledOps(enabledOps.filter(o => o !== op))
@@ -28,6 +31,7 @@ function App(){
 		}
 	}
 
+	// check if answer inputted is correct 
 	function checkAnswer(){
 		let correctAnswer;
 
@@ -63,8 +67,10 @@ function App(){
 		setAnswer('')
 	}
 
+	// timer going down -1 second 
 	useEffect(() => {
 		if (!gameStarted) return
+		setTime(timeLimit)
 
 		const id = setInterval(() => {
 			setTime(t => {
@@ -80,6 +86,7 @@ function App(){
 		return () => clearInterval(id)
 	}, [gameStarted])
 
+	// acutal game ui
 	return (
 		<>
 		{gameStarted ? (
@@ -110,8 +117,13 @@ function App(){
 					{op}
 					</label>
 				))}
+				<input
+					type="number"
+					value={timeLimit}
+					onChange={(e) => setTimeLimit(Number(e.target.value))}
+				/>
 
-				<button onClick={() => {setGameStarted(true); problemGenerator() }}>Start</button>
+				<button onClick={() => {setTime(timeLimit); setGameStarted(true); problemGenerator() }}>Start</button>
 			</div>
 		)}
 		</>

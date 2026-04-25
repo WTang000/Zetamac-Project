@@ -80,24 +80,10 @@ function App(){
 		}
 	}, [answer])
 
-	// acutal game ui
+	// game
 	return (
 		<>
-		{gameStarted ? (
-			/* ui */
-			<div>
-				<h1>Zetamac</h1>
-				<h1>{problem.num1} {problem.operator} {problem.num2} =</h1>
-				<input 
-					value={answer} 
-					onChange={(e) => setAnswer(e.target.value)} 
-					disabled={time === 0}
-				/>
-
-				<p>Correct: {correct}</p>
-				<p>Time: {time}</p>
-			</div>
-		) : (
+		{!gameStarted ? (
 			/* settings */
 			<div>
 				{/* for custom operations */}
@@ -154,6 +140,31 @@ function App(){
 
 				{/* start button */}
 				<button onClick={() => {setTime(timeLimit); setGameStarted(true); problemGenerator() }}>Start</button>
+			</div>
+		) : time === 0 ? (
+			/* game over */
+			<div>
+				<h1> Game Over </h1>
+				<p> Correct: {correct} </p>
+				<button onClick={() => {
+					setGameStarted(false)
+					setCorrect(0)
+					setAnswer('')
+				}}> Play Again </button>
+			</div>
+		) : (
+			/* game ui */
+			<div>
+				<h1>Zetamac</h1>
+				<h1>{problem.num1} {problem.operator} {problem.num2} =</h1>
+				<input 
+					value={answer} 
+					onChange={(e) => setAnswer(e.target.value)} 
+					disabled={time === 0}
+				/>
+
+				<p>Correct: {correct}</p>
+				<p>Time: {time}</p>
 			</div>
 		)}
 		</>
